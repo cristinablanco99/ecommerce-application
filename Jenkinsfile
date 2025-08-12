@@ -14,21 +14,27 @@ pipeline {
 
     stage('Build & Test') {
       steps {
-        bat 'mvn -B -DskipTests=false clean verify'
+        // Windows -> usar bat; perfil de test activado
+        bat 'mvn -B -Dspring.profiles.active=test -DskipTests=false clean test'
       }
       post {
         always {
-          junit '**\\target\\surefire-reports\\*.xml'
-          jacoco execPattern: '**\\target\\jacoco.exec',
-                 classPattern: '**\\target\\classes',
-                 sourcePattern: '**\\src\\main\\java'
+          // Usa / en los globs (Ant-style, independ. del SO)
+          // Publica Surefire y, si existieran, Failsafe
+          junit testResults: 'target/surefire-reports/*.xml,target/failsafe-reports/*.xml'
+
+          // Jacoco con / en las rutas
+          jacoco execPattern: 'target/jacoco.exec',
+                 classPattern: 'target/classes',
+                 sourcePattern: 'src/main/java'
         }
       }
     }
 
     stage('Package') {
       steps {
-        bat 'mvn -B -DskipTests package'
+        // Empaqueta usando el mismo perfil de test
+        bat 'mvn -B -Dspring.profiles.active=test -DskipTests package'
       }
     }
   }

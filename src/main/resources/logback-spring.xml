@@ -1,46 +1,35 @@
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
+    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
 
-    <property name="SPLUNK_HEC_URL" value="${SPLUNK_HEC_URL:-http://localhost:8088/services/collector}"/>
-    <property name="SPLUNK_HEC_TOKEN" value="${SPLUNK_HEC_TOKEN:-replace-me}"/>
-
-    <appender name="SPLUNK" class="net.logstash.logback.appender.HttpAppender">
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp/>
-                <pattern>
-                    <pattern>
-                        {
-                        "level":"%level",
-                        "logger":"%logger{36}",
-                        "thread":"%thread",
-                        "message":"%message"
-                        }
-                    </pattern>
-                </pattern>
-                <arguments/>
-                <stackTrace/>
-            </providers>
-        </encoder>
         <url>${SPLUNK_HEC_URL}</url>
-        <headers>
-            <header>
-                <name>Authorization</name>
-                <value>Splunk ${SPLUNK_HEC_TOKEN}</value>
-            </header>
-            <header>
-                <name>Content-Type</name>
-                <value>application/json</value>
-            </header>
-        </headers>
-        <verifySsl>false</verifySsl>
+        <token>${SPLUNK_HEC_TOKEN}</token>
+        <index>${SPLUNK_INDEX:-main}</index>
+        <source>${SPLUNK_SOURCE:-ecommerce-application}</source>
+        <sourcetype>${SPLUNK_SOURCETYPE:-spring-boot}</sourcetype>
+        <messageFormat>json</messageFormat>
+        <includeMDC>true</includeMDC>
+
+        <disableCertificateValidation>${SPLUNK_DISABLE_SSL_VALIDATION:-true}</disableCertificateValidation>
+
+        <batch_size_count>1</batch_size_count>
     </appender>
+
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestId}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="org.springframework" level="WARN"/>
+
+
+    <logger name="com.udacity.ecommerce" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="SPLUNK"/>
     </root>
-
-    <logger name="org.springframework.security" level="INFO"/>
 </configuration>

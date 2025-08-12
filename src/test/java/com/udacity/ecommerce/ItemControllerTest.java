@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ItemControllerIT extends TestSupport {
+class ItemControllerTest extends TestSupport {
 
     @Test
     void getById_and_getByName_work_with_auth_and_404_when_missing() throws Exception {

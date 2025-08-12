@@ -8,6 +8,6 @@ import org.springframework.test.context.ActiveProfiles;
         properties = "spring.jpa.defer-datasource-initialization=true"
 )
 @ActiveProfiles("test")
-class ContextLoadsIT {
+class ContextLoadsTest {
     @Test void contextLoads() { }
 }

@@ -19,7 +19,11 @@ pipeline {
       post {
         always {
           junit testResults: 'target/surefire-reports/*.xml'
-          recordCoverage tools: [jacocoAdapter('target/site/jacoco/jacoco.xml')]
+
+         recordCoverage tools: [[
+            $class: 'JacocoReportAdapter',
+            path: 'target/site/jacoco/jacoco.xml'
+          ]]
         }
       }
     }

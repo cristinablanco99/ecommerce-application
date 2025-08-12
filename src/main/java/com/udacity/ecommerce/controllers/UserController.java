@@ -2,21 +2,15 @@ package com.udacity.ecommerce.controllers;
 
 import com.udacity.ecommerce.model.dto.CreateUserRequest;
 import com.udacity.ecommerce.model.dto.UserResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.udacity.ecommerce.model.persistence.Cart;
 import com.udacity.ecommerce.model.persistence.User;
 import com.udacity.ecommerce.model.persistence.repositories.CartRepository;
 import com.udacity.ecommerce.model.persistence.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -62,12 +56,16 @@ public class UserController {
 		}
 
 		Cart cart = new Cart();
-		cartRepository.save(cart);
+
 		User user = new User();
 		user.setUsername(req.username());
-		user.setPassword(passwordEncoder.encode(req.password())); // hash
+		user.setPassword(passwordEncoder.encode(req.password()));
+
 		user.setCart(cart);
+		cart.setUser(user);
+
 		userRepository.save(user);
+
 		UserResponse body = new UserResponse(user.getId(), user.getUsername());
 		return ResponseEntity.status(HttpStatus.CREATED).body(body);
 	}

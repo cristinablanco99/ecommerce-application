@@ -1,0 +1,46 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+
+    <property name="SPLUNK_HEC_URL" value="${SPLUNK_HEC_URL:-http://localhost:8088/services/collector}"/>
+    <property name="SPLUNK_HEC_TOKEN" value="${SPLUNK_HEC_TOKEN:-replace-me}"/>
+
+    <appender name="SPLUNK" class="net.logstash.logback.appender.HttpAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <pattern>
+                    <pattern>
+                        {
+                        "level":"%level",
+                        "logger":"%logger{36}",
+                        "thread":"%thread",
+                        "message":"%message"
+                        }
+                    </pattern>
+                </pattern>
+                <arguments/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+        <url>${SPLUNK_HEC_URL}</url>
+        <headers>
+            <header>
+                <name>Authorization</name>
+                <value>Splunk ${SPLUNK_HEC_TOKEN}</value>
+            </header>
+            <header>
+                <name>Content-Type</name>
+                <value>application/json</value>
+            </header>
+        </headers>
+        <verifySsl>false</verifySsl>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SPLUNK"/>
+    </root>
+
+    <logger name="org.springframework.security" level="INFO"/>
+</configuration>

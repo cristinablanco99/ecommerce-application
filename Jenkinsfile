@@ -14,15 +14,12 @@ pipeline {
 
     stage('Build & Test') {
       steps {
-        bat 'mvn -B -Dspring.profiles.active=test -DskipTests=false clean test'
+        bat 'mvn -B -Dspring.profiles.active=test -DskipTests=false clean test jacoco:report'
       }
       post {
         always {
-          junit testResults: 'target/surefire-reports/*.xml,target/failsafe-reports/*.xml'
-
-          jacoco execPattern: 'target/jacoco.exec',
-                 classPattern: 'target/classes',
-                 sourcePattern: 'src/main/java'
+          junit testResults: 'target/surefire-reports/*.xml'
+          recordCoverage tools: [jacocoAdapter('target/site/jacoco/jacoco.xml')]
         }
       }
     }
